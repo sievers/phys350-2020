@@ -62,7 +62,7 @@ def cg(rhs,x0,mask,kernelft,niter,fun=rho2pot_masked,show_steps=False,step_pause
         if show_steps:            
             tmp=fun(x,mask,kernelft,True)
             plt.clf();
-            plt.imshow(tmp,vmin=-0.1,vmax=2.1)
+            plt.imshow(tmp,vmin=-2.1,vmax=2.1)
             plt.colorbar()
             plt.title('rsqr='+repr(rsqr)+' on iter '+repr(k+1))
             plt.savefig('laplace_iter_1024_'+repr(k+1)+'.png')
@@ -100,17 +100,21 @@ mask[0,:]=True
 mask[-1,:]=True
 mask[:,0]=True
 mask[:,-1]=True
-bc[0,:]=2.0
-bc[0,0]=0.5
-bc[0,-1]=0.5
-#bc[n//4:3*n//4,n//4]=2.0
-#mask[n//4:3*n//4,n//4]=True
+bc[0,:]=0.0
+bc[0,0]=0.0
+bc[0,-1]=0.0
+#This adds a bar in the interior held at fixed potential
+bc[n//4:3*n//4,(2*n//5)]=2.0
+mask[n//4:3*n//4,(2*n//5)]=True
+
+bc[n//4:3*n//4,(3*n//5)]=-2.0
+mask[n//4:3*n//4,(3*n//5)]=True
 
 kernel=greens(2*n,2)
 kernelft=np.fft.rfft2(kernel)
-fwee=rho2pot(bc,kernelft)
-rr=bc[mask]
-fwee2=rho2pot_masked(rr,mask,kernelft)
+#fwee=rho2pot(bc,kernelft)
+#rr=bc[mask]
+#fwee2=rho2pot_masked(rr,mask,kernelft)
 
 
 rhs=bc[mask]
