@@ -35,7 +35,7 @@ mat=legendre_mat(costh,nterm)
 #by the law of cosines, d^2=a^2+R^2-2aRcos(theta)
 #we'll let epsilon_0=1 for now
 V=q/4/np.pi/np.sqrt(a**2+R**2-2*a*R*costh)
-coeffs=np.linalg.inv(mat.T@mat)@(mat.T@V)
+coeffs=np.linalg.inv(mat.T@mat)@(mat.T@V) #our usual get the coefficients to the Legendre polynomials
 V_out=mat@coeffs
 print(coeffs*4*np.pi)
 

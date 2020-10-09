@@ -43,8 +43,8 @@ phi=np.linspace(0,2*np.pi,400)
 thmat,phimat=np.meshgrid(th,phi)
 costh=np.cos(thmat)
 
-l=15
-m=5
+l=15  #number of total wavelengths (=#of lobes/2)
+m=15 #number of lobes in phi direction is 2m (one positive one negative)
 
 rmat=plm(costh,l,m)
 rmat=rmat*np.cos(m*phimat)  #make the executive decision to only use the cos term.
