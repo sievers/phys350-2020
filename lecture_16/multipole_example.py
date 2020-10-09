@@ -22,7 +22,9 @@ def get_alm(x,y,z,q,lmax):
     for l in range(lmax+1):
         for m in range(0,l+1):
             y_lm=sph_harm(m,l,phi,th)
-            coeffs[l,m]=np.sum(q*y_lm*r**l)
+            #find the coefficient.  Putting in a square root here
+            #keeps dipole moment equal to sum of q times r
+            coeffs[l,m]=np.sum(q*y_lm*r**l)*np.sqrt(4*np.pi/(2*l+1))
     return coeffs
 def evaluate_pot(a_lm,x,y,z,lmax=-1):
     #evaluate the potential given a multipole expansion
@@ -41,13 +43,15 @@ def evaluate_pot(a_lm,x,y,z,lmax=-1):
         for m in range(l+1):
             tot=tot+np.real(sph_harm(m,l,-phi,th)*coeffs[l,m])*(1.0+(m>0))
         #now add to potential with normalization and r scaling
-        V=V+4*np.pi/(2*l+1)*tot/r**(l+1)
+        V=V+np.sqrt(4*np.pi/(2*l+1))*tot/r**(l+1)
     return V
 
 #pick a few charge setups (possibly random) to demonstrate
 if True:
     q=np.asarray([1,-1])
     z=np.asarray([1,-1])
+    q=q*10
+    z=z/10
     y=np.asarray([0,0])
     x=np.asarray([0,0])
 else:
@@ -56,7 +60,7 @@ else:
     x=np.asarray([0.5,0,-0.5])*0
     z=np.asarray([0,0,0])
 
-if True:
+if False:
     nn=10
     np.random.seed(1)
     q=np.random.randn(nn)
@@ -64,6 +68,19 @@ if True:
     x=2*np.random.rand(nn)-1
     y=2*np.random.rand(nn)-1
     z=2*np.random.rand(nn)-1
+    if False:
+        #we can manually zero the dipole here.  we'll do 
+        #this by appending charges at (1,0,0), (0,1,0),(0,0,1), and then
+        #a charge at (0,0,0) to cancel the added charge
+        px=np.sum(x*q)
+        py=np.sum(y*q)
+        pz=np.sum(z*q)
+        ptot=px+py+pz
+        q=np.hstack([q,[-px,-py,-pz,ptot]])
+        x=np.hstack([x,[1,0,0,0]])
+        y=np.hstack([y,[0,1,0,0]])
+        z=np.hstack([z,[0,0,1,0]])
+    
 
 
 #this gets our multipole expansion
